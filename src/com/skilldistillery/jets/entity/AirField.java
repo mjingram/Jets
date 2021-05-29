@@ -8,10 +8,24 @@ import java.util.*;
 public class AirField {
 
 	private List<Jet> jets;
+	private List<Pilot> pilots;
 
 	public AirField(String file) {
 		this.jets = readFile(file);
-
+		this.pilots = new ArrayList<>();
+		Pilot pilot1 = new Pilot("Maverick", 6, 100000);
+		Pilot pilot2 = new Pilot("Amelia Earhhart", 80, 120000);
+		Pilot pilot3 = new Pilot("Charles Lindbergh", 34, 75000);
+		Pilot pilot4 = new Pilot("Red Baron", 23, 50000);
+		Pilot pilot5 = new Pilot("Goose", 4, 70000);
+		Pilot pilot6 = new Pilot("Mal Reynolds", 10, 85000);
+		
+		pilots.add(pilot1);
+		pilots.add(pilot2);
+		pilots.add(pilot3);
+		pilots.add(pilot4);
+		pilots.add(pilot5);
+		pilots.add(pilot6);
 	}
 
 	private static List<Jet> readFile(String fileName) {
@@ -40,7 +54,7 @@ public class AirField {
 					System.out.println("Invalid Type!!!");
 				}
 				// System.out.println(p);
-
+				
 			} // while loop
 			bufIn.close();
 		} // try
@@ -50,6 +64,7 @@ public class AirField {
 		return jets;
 	}
 
+
 	public List<Jet> getJets() {
 		return jets;
 	}
@@ -58,6 +73,45 @@ public class AirField {
 		this.jets = jets;
 	}
 	
+	public List<Pilot> getPilots() {
+		return pilots;
+	}
+
+	public void setPilots(List<Pilot> pilots) {
+		this.pilots = pilots;
+	}
+	public Pilot getPilotAtIndex(int index) {
+		int counter = 0;
+		Pilot empty = null;
+		if(index>pilots.size()) {
+			System.out.println("Invalid Input");
+			return empty;
+		}
+		for(Pilot p: pilots) {
+			if(counter == index) {
+				return p;
+			}
+			counter++;
+		}
+		return empty;
+		
+	}
+	
+	public Pilot getPilotByName(String name) {
+		Pilot empty = null;
+		
+		for(Pilot p: pilots) {
+			if(p.getName().equals(name)) {
+				return p;
+			}
+		}
+		return empty;
+		
+	}
+	public int numberOfPilotsOnStaff() {
+		int pilotCount  = this.pilots.size();
+		return pilotCount;
+	}
 	public int numberOfPlanesInAirField() {
 		int numofPlanes = this.jets.size();
 		return numofPlanes;
