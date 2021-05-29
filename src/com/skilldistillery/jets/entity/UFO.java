@@ -1,6 +1,6 @@
 package com.skilldistillery.jets.entity;
 
-public class UFO extends Jet{
+public class UFO extends Jet implements CombatReady{
 
 	public UFO(String model, double speed, int range, long price) {
 		super(model, speed, range, price);}
@@ -8,9 +8,11 @@ public class UFO extends Jet{
 	
 	
 	public void fight() {
-		System.out.println("Combat Engaged");
-		System.out.println("Preparing for Wold Domination!!!");
+		System.out.println();
+		System.out.println(this.getModel() + " Combat Engaged");
+		System.out.println("Preparing for World Domination!!!");
 		System.out.println("Mwhahahahah");
+		System.out.println();
 	}
 
 

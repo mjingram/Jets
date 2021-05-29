@@ -58,7 +58,10 @@ public class AirField {
 		this.jets = jets;
 	}
 	
-	
+	public int numberOfPlanesInAirField() {
+		int numofPlanes = this.jets.size();
+		return numofPlanes;
+	}
 	
 	public Jet fastestJet(List<Jet> jets) {
 		double fastest = 0;
