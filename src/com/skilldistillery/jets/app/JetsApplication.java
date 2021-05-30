@@ -1,5 +1,8 @@
 package com.skilldistillery.jets.app;
 
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -53,7 +56,8 @@ public class JetsApplication {
 			System.out.println("7: Add a Jet to the Fleet");
 			System.out.println("8: Remove a Jet to the Fleet");
 			System.out.println("9: Pilots");
-			System.out.println("10: Quit");
+			System.out.println("10: Save Jets to File");
+			System.out.println("0: Quit");
 			System.out.println();
 
 			System.out.println("Enter a menu option: ");
@@ -101,10 +105,24 @@ public class JetsApplication {
 				pilotMenu(input, airField);
 
 			}  else if (selection == 10) {
+				System.out.println("Enter the file name to save to:");
+				System.out.println("Do not add extension(.txt, .csv, etc)");
+				scanner.nextLine();
+				String outFile = scanner.nextLine();
+				outFile = outFile.trim();
+				outFile = outFile+".txt";
+				System.out.println(outFile);
+				System.out.println("Saving Jets to " + outFile +"...");
+				writeFile(outFile, airField);
+				
+			}  else if (selection == 0) {
 				System.out.println("Exiting...");
 				break;
 
-			} else {
+			}
+			
+			
+			else {
 				System.out.println("Not an option. Try again.");
 			}
 		}
@@ -423,7 +441,7 @@ public class JetsApplication {
 				}
 				for (Pilot p : airField.getPilots()) {
 					
-					if (name.equals(p.getName())) {
+					if (name.equalsIgnoreCase(p.getName())) {
 						indexToRemove = counter;
 					}
 					
@@ -434,6 +452,12 @@ public class JetsApplication {
 				if(indexToRemove == -1000) {
 					System.out.println("Pilot Not Found");
 					continue;
+				}
+				for(Jet j:airField.getJets()) {
+					if(j.getPilot().getName().equalsIgnoreCase(name)) {
+						Pilot empty = new Pilot("Unmanned", 0, 0);
+						j.setPilot(empty);
+					}
 				}
 				
 				List<Pilot> newList = airField.getPilots();
@@ -475,7 +499,7 @@ public class JetsApplication {
 				String name = scanner.nextLine();
 				boolean alreadyWorking = true;
 				for(Pilot p: unassigned) {
-					if(p.getName().equals(name)) {
+					if(p.getName().equalsIgnoreCase(name)) {
 						alreadyWorking = false;
 					}
 				}
@@ -490,7 +514,7 @@ public class JetsApplication {
 				//Check if user inputed model is unmanned
 				boolean alreadyPiloted = true;
 				for(Jet j: unmanned) {
-					if(j.getModel().equals(model)) {
+					if(j.getModel().equalsIgnoreCase(model)) {
 						alreadyPiloted = false;
 					}
 				}
@@ -500,7 +524,7 @@ public class JetsApplication {
 				}
 				//Sets the pilot to the plane
 				for(Jet j: airField.getJets()) {
-					if(j.getModel().equals(model)) {
+					if(j.getModel().equalsIgnoreCase(model)) {
 						j.setPilot(airField.getPilotByName(name));
 						airField.getPilotByName(name).setWorking(true);
 					}
@@ -509,13 +533,53 @@ public class JetsApplication {
 				
 			}
 			else if( selection == 4) {
+				System.out.println("Enter the Pilot you wish to remove from the crew: ");
+				scanner.nextLine();
+				String name = scanner.nextLine();
+				boolean pilotFound = false;
+				for(Jet j: airField.getJets()) {
+					if(j.getPilot().getName().equalsIgnoreCase(name)) {
+						Pilot empty = new Pilot("Unmanned", 0 ,0);
+						
+						j.setPilot(empty);
+						pilotFound = true;
+						
+					}
+				}
+				if(pilotFound == false) {
+					System.out.println("Pilot not found");
+					continue;
+				}
+				for(Pilot p: airField.getPilots()) {
+					if(p.getName().equalsIgnoreCase(name)) {
+						p.setWorking(false);
+					}
+				}
 				
 			}
 			else if (selection == 5) {
-				System.out.println("Full Pilot Info: " + airField.getPilots().toString());
+				System.out.println("Pilots On Staff: ");
+				for(Pilot p: airField.getPilots()) {
+					System.out.println("Name: " + p.getName() + ", YoE: " + p.getYearsOfExperience() + ", Salary: " + p.getSalary());
+				}
+				System.out.println();
 				System.out.println("Total Pilots: " + airField.numberOfPilotsOnStaff());
+				System.out.println("Total Planes: " + airField.numberOfPlanesInAirField());
+				System.out.println();
 				for(Jet j: airField.getJets()) {
 					System.out.println("Model: " + j.getModel() + ", Pilot: " + j.getPilot().getName());
+				}
+				System.out.println();
+				System.out.println("Unassigned Pilots: ");
+				boolean allWorking = true;
+				for(Pilot p: airField.getPilots()) {
+					if(p.isWorking() == false) {
+						System.out.println("Name: " + p.getName());
+						allWorking = false;
+					}
+				}
+				if(allWorking == true) {
+					System.out.println("No unassigned pilots!");
 				}
 			}
 			
@@ -525,6 +589,47 @@ public class JetsApplication {
 			}else {
 				System.out.println("Invalid input, try again");
 			}
+		}
+	}
+	
+	private void writeFile(String outFileName, AirField airField) {
+		
+		if(outFileName.equals("jets.txt")) {
+			System.err.println("Output file name entered is the same as the input filename");
+			return;
+		}
+
+		try {
+			FileWriter fw = new FileWriter(outFileName);
+			PrintWriter pw = new PrintWriter(fw);
+
+			StringBuilder sb = new StringBuilder();
+			for(Jet j: airField.getJets()) {
+			sb.append(j.getModel());
+			sb.append(',');
+			sb.append(j.getSpeed());
+			sb.append(',');
+			sb.append(j.getRange());
+			sb.append(',');
+			sb.append(j.getPrice());
+			sb.append(',');
+			if(j.getClass().getSimpleName().equals("CommercialJet")) {
+				sb.append(1);
+			}
+			else if(j.getClass().getSimpleName().equals("FighterJet")) {
+				sb.append(2);
+			}else if(j.getClass().getSimpleName().equals("UFO")) {
+				sb.append(3);
+			}
+			sb.append('\n');
+			
+			}
+
+			pw.println(sb);
+
+			pw.close();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 
